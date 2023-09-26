@@ -1,9 +1,21 @@
 
 package com.ecommerce.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import java.util.List;
 
+@Entity
+@Table(name = "usuarios")
 public class Usuario {
-    private Integer id;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id_usuario;
     private String nombre;
     private String username;
     private String email;
@@ -12,11 +24,17 @@ public class Usuario {
     private String tipo;
     private String password;
 
+    @OneToMany(mappedBy = "usuario")
+    private List<Producto> productos;
+    
+    @OneToMany(mappedBy = "usuario")
+    private List<Orden> ordenes;
+    
     public Usuario() {
     }
 
-    public Usuario(Integer id, String nombre, String username, String email, String direccion, String telefono, String tipo, String password) {
-        this.id = id;
+    public Usuario(Integer id_usuario, String nombre, String username, String email, String direccion, String telefono, String tipo, String password) {
+        this.id_usuario = id_usuario;
         this.nombre = nombre;
         this.username = username;
         this.email = email;
@@ -28,12 +46,12 @@ public class Usuario {
 
     
     
-    public Integer getId() {
-        return id;
+    public Integer getId_usuario() {
+        return id_usuario;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setId_usuario(Integer id_usuario) {
+        this.id_usuario = id_usuario;
     }
 
     public String getNombre() {
@@ -91,6 +109,17 @@ public class Usuario {
     public void setPassword(String password) {
         this.password = password;
     }
-    
-    
+
+    public List<Producto> getProductos() {
+        return productos;
+    }
+
+    public void setProductos(List<Producto> productos) {
+        this.productos = productos;
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{" + "id_usuario=" + id_usuario + ", nombre=" + nombre + ", username=" + username + ", email=" + email + ", direccion=" + direccion + ", telefono=" + telefono + ", tipo=" + tipo + ", password=" + password + '}';
+    }
 }
