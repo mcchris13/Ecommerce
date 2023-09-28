@@ -3,6 +3,8 @@ package com.ecommerce.service;
 
 import com.ecommerce.model.Producto;
 import com.ecommerce.repository.ProductoRepository;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,5 +34,9 @@ public class ProductoServiceImp implements ProductoService{
     public void eliminar(Integer id) {
         productoRepository.deleteById(id);
     }
-    
+
+    @Override
+    public List<Producto> listar() {
+        return (List<Producto>) productoRepository.findAll();
+    }
 }
