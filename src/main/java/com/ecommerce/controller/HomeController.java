@@ -27,8 +27,10 @@ public class HomeController {
     }
     
     @GetMapping("productohome/{id}")
-    public String productoHome(Producto producto) {
+    public String productoHome(Producto producto, Model modelo) {
         log.info("Id producto enviado como parámetro {}", producto.getId());
+        var p = productoService.buscar(producto.getId()).get();
+        modelo.addAttribute("producto", p);
         return "usuario/productohome";
     }
 }
