@@ -48,7 +48,8 @@
                             </a>
                         </div>
                         <div class="col-lg-6">
-                            <form action="carrito.html" method="POST">
+                            <form th:action="@{/carrito}" method="POST">
+                                <input type="hidden" th:value="${producto.id}" name="id">
                                 <h2 class="card-title" th:text="${producto.nombre}">Nombre producto</h2>
 
                                 <ul class="list-group">
@@ -58,7 +59,7 @@
                                     </li>
                                     <li class="list-group-item"><h6>
                                             Cantidad: <input type="number" id="cantidad" name="cantidad" autocomplete="off"
-                                                             min="1" max="5" th:value="${producto.cantidad}">
+                                                             min="1" max="5" th:value="1">
                                         </h6></li>
                                 </ul>
 
@@ -78,8 +79,8 @@
         
 
         <!-- Bootstrap core JavaScript -->
-        <script th:src="@{vendor/jquery/jquery.min.js}"></script>
-        <script th:src="@{vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+        <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
 
     </body>
 
