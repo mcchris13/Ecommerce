@@ -4,9 +4,12 @@ import com.ecommerce.model.DetalleOrden;
 import com.ecommerce.model.Orden;
 import com.ecommerce.model.Producto;
 import com.ecommerce.model.Usuario;
+import com.ecommerce.service.DetalleOrdenService;
+import com.ecommerce.service.OrdenService;
 import com.ecommerce.service.ProductoService;
 import com.ecommerce.service.UsuarioService;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +33,12 @@ public class HomeController {
     
     @Autowired
     private UsuarioService usuarioService;
+    
+    @Autowired
+    private OrdenService ordenService;
+    
+    @Autowired
+    private DetalleOrdenService detalleOrdenService;
     
     //Detalles de la orden
     List<DetalleOrden> detalles = new ArrayList<DetalleOrden> ();
@@ -122,5 +131,29 @@ public class HomeController {
         
         model.addAttribute("usuario", usuario);
         return "usuario/resumenorden";
+    }
+    
+    @GetMapping("/saveOrder")
+    public String saveOrder() {
+        Date fechaCreacion = new Date();
+        orden.setFechaCreacion(fechaCreacion);
+        orden.setNumero(ordenService.generarNumeroOrden());
+        
+        //Usuario
+        Usuario usuario = usuarioService.findById(1).get();
+        
+        orden.setUsuario(usuario);
+        ordenService.save(orden);
+        
+        //guardar detalles
+        for (DetalleOrden dt : detalles) {
+            dt.setOrden(orden);
+            detalleOrdenService.save(dt);
+        }
+        
+        //limpiar lista y orden
+        orden = new Orden();
+        detalles.clear();
+        return "redirect:/";
     }
 }
