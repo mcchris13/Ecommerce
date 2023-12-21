@@ -11,6 +11,7 @@ import com.ecommerce.service.UsuarioService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,5 +156,13 @@ public class HomeController {
         orden = new Orden();
         detalles.clear();
         return "redirect:/";
+    }
+    
+    @PostMapping("/buscar")      //@RequestParam es para recibir un dato de la vista
+    public String buscarProducto(@RequestParam String nombre, Model modelo) { 
+        log.info("Nombre del producto: {}", nombre);
+        List<Producto> productos =  productoService.listar().stream().filter(p -> p.getNombre().contains(nombre)).collect(Collectors.toList());
+        modelo.addAttribute("productos", productos);
+        return "usuario/home";
     }
 }
