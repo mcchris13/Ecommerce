@@ -17,5 +17,10 @@ public class UsuarioServiceImp implements UsuarioService {
     public Optional<Usuario> findById(Integer id) {
         return usuarioRepository.findById(id);
     }
+
+    @Override
+    public Usuario guardar(Usuario usuario) {
+        return usuarioRepository.save(usuario);
+    }
     
 }
