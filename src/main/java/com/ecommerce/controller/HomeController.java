@@ -8,6 +8,7 @@ import com.ecommerce.service.DetalleOrdenService;
 import com.ecommerce.service.OrdenService;
 import com.ecommerce.service.ProductoService;
 import com.ecommerce.service.UsuarioService;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -47,7 +48,8 @@ public class HomeController {
     Orden orden = new Orden();
 
     @GetMapping("")
-    public String home(Model modelo) {
+    public String home(Model modelo, HttpSession session) {
+        log.info("Sesion del usuario: {}", session.getAttribute("idUsuario"));
         modelo.addAttribute("productos", productoService.listar());
         return "usuario/home";
     }
@@ -123,9 +125,9 @@ public class HomeController {
     }
     
     @GetMapping("/orden")
-    public String order(Model model) {
-        
-        Usuario usuario = usuarioService.findById(1).get();
+    public String order(Model model, HttpSession session) {
+        //log.info("Usuario: {}", usuarioService.findById(Integer.parseInt(session.getAttribute("idUsuario").toString() )).get());
+        Usuario usuario = usuarioService.findById(Integer.parseInt(session.getAttribute("idUsuario").toString() )).get();
         
         model.addAttribute("carrito", detalles);
         model.addAttribute("orden", orden);
@@ -135,15 +137,15 @@ public class HomeController {
     }
     
     @GetMapping("/saveOrder")
-    public String saveOrder() {
+    public String saveOrder(HttpSession session) {
         Date fechaCreacion = new Date();
         orden.setFechaCreacion(fechaCreacion);
         orden.setNumero(ordenService.generarNumeroOrden());
         
         //Usuario
-        Usuario usuario = usuarioService.findById(1).get();
+        Usuario u = usuarioService.findById(Integer.parseInt(session.getAttribute("idUsuario").toString() )).get();
         
-        orden.setUsuario(usuario);
+        orden.setUsuario(u);
         ordenService.save(orden);
         
         //guardar detalles

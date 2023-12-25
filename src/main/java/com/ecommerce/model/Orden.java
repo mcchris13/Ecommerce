@@ -26,8 +26,7 @@ public class Orden {
     @ManyToOne
     private Usuario usuario;
     
-    @OneToOne(mappedBy = "orden")
-    private DetalleOrden detalleOrden;
+    
     
     public Orden() {
     }

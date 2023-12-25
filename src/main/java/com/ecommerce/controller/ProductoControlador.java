@@ -4,6 +4,8 @@ import com.ecommerce.model.Producto;
 import com.ecommerce.model.Usuario;
 import com.ecommerce.service.ProductoService;
 import com.ecommerce.service.SubirArchivoService;
+import com.ecommerce.service.UsuarioService;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -27,6 +29,9 @@ public class ProductoControlador {
 
     @Autowired
     private SubirArchivoService subirArchivoService;
+    
+    @Autowired
+    private UsuarioService usuarioService;
 
     @GetMapping("/productos")
     public String show(Model modelo) {
@@ -41,9 +46,10 @@ public class ProductoControlador {
     }
 
     @PostMapping("/productos/guardar")
-    public String guardar(Producto producto, @RequestParam("img") MultipartFile file) {
+    public String guardar(Producto producto, @RequestParam("img") MultipartFile file, HttpSession session) {
         LOGGER.info("Este es el objeto producto {}", producto);
-        Usuario u = new Usuario(1, "", "", "", "", "", "", "");
+        
+        Usuario u = usuarioService.findById(Integer.parseInt(session.getAttribute("idUsuario").toString())).get();
         producto.setUsuario(u);
         //imagen
         if (producto.getId() == null) { //cuando se crea un producto
