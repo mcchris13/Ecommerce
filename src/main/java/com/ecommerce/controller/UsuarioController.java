@@ -1,14 +1,18 @@
 
 package com.ecommerce.controller;
 
+import com.ecommerce.model.Orden;
 import com.ecommerce.model.Usuario;
+import com.ecommerce.service.OrdenService;
 import com.ecommerce.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +25,9 @@ public class UsuarioController {
     
     @Autowired
     private UsuarioService usuarioService;
+    
+    @Autowired
+    private OrdenService ordenService;
     
     //   /usuario/registro
     @GetMapping("/registro")
@@ -61,5 +68,17 @@ public class UsuarioController {
             logger.info("Usuario no existe");
         }
         return "redirect:/";
+    }
+    
+    
+    @GetMapping("/compras")
+    public String listaCompras(Model modelo, HttpSession session) {
+        modelo.addAttribute("session", session);
+        
+        Usuario u = usuarioService.findById(Integer.parseInt(session.getAttribute("idUsuario").toString() )).get();
+        
+        modelo.addAttribute("ordenes", ordenService.findByUsuario(u));
+        
+        return "usuario/compras";
     }
 }

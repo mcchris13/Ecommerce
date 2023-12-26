@@ -10,6 +10,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "ordenes")
@@ -26,7 +27,8 @@ public class Orden {
     @ManyToOne
     private Usuario usuario;
     
-    
+    @OneToMany(mappedBy = "orden")
+    private List<DetalleOrden> detalle;
     
     public Orden() {
     }
