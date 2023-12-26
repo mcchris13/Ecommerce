@@ -3,6 +3,7 @@ package com.ecommerce.controller;
 
 import com.ecommerce.model.Orden;
 import com.ecommerce.model.Usuario;
+import com.ecommerce.service.DetalleOrdenService;
 import com.ecommerce.service.OrdenService;
 import com.ecommerce.service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -28,6 +30,9 @@ public class UsuarioController {
     
     @Autowired
     private OrdenService ordenService;
+    
+    @Autowired
+    private DetalleOrdenService detalleOrdenService;
     
     //   /usuario/registro
     @GetMapping("/registro")
@@ -80,5 +85,14 @@ public class UsuarioController {
         modelo.addAttribute("ordenes", ordenService.findByUsuario(u));
         
         return "usuario/compras";
+    }
+    
+    @GetMapping("/detalle/{id}")
+    public String detalleCompra(@PathVariable Integer id, Model modelo, HttpSession session) {
+        logger.info("El ID detalle es: {}", id);
+        modelo.addAttribute("session",session.getAttribute("idUsuario"));
+        Optional<Orden> o = ordenService.buscar(id);
+        modelo.addAttribute("detalles", o.get().getDetalle());
+        return "usuario/detallecompra";
     }
 }

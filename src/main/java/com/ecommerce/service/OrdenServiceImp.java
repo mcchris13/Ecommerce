@@ -6,6 +6,7 @@ import com.ecommerce.model.Usuario;
 import com.ecommerce.repository.OrdenRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,4 +57,11 @@ public class OrdenServiceImp implements OrdenService{
     public List<Orden> findByUsuario(Usuario usuario) {
         return ordenRepository.findByUsuario(usuario);
     }
+
+    @Override
+    public Optional<Orden> buscar(Integer id) {
+        return ordenRepository.findById(id);
+    }
+
+    
 }
