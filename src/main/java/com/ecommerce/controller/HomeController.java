@@ -32,141 +32,189 @@ public class HomeController {
 
     @Autowired
     private ProductoService productoService;
-    
+
     @Autowired
     private UsuarioService usuarioService;
-    
+
     @Autowired
     private OrdenService ordenService;
-    
+
     @Autowired
     private DetalleOrdenService detalleOrdenService;
-    
+
     //Detalles de la orden
-    List<DetalleOrden> detalles = new ArrayList<DetalleOrden> ();
+    List<DetalleOrden> detalles = new ArrayList<DetalleOrden>();
     //Datos de la orden
     Orden orden = new Orden();
 
     @GetMapping("")
     public String home(Model modelo, HttpSession session) {
         log.info("Sesion del usuario: {}", session.getAttribute("idUsuario"));
+
         modelo.addAttribute("productos", productoService.listar());
-        
+
+        if (session.getAttribute("idUsuario") == null) {
+            String sesion = null;
+            modelo.addAttribute("sesion", sesion);
+        } else {
+            String sesion = "usuario";
+            modelo.addAttribute("sesion", sesion);
+        }
+
+        //String sesion = session.getAttribute("idUsuario").toString();
         modelo.addAttribute("session", session.getAttribute("idUsuario"));
+
         return "usuario/home";
     }
 
     @GetMapping("productohome/{id}")
-    public String productoHome(Producto producto, Model modelo) {
+    public String productoHome(Producto producto, Model modelo, HttpSession session) {
         log.info("Id producto enviado como parámetro {}", producto.getId());
         var p = productoService.buscar(producto.getId()).get();
         modelo.addAttribute("producto", p);
+
+        if (session.getAttribute("idUsuario") == null) {
+            String sesion = null;
+            modelo.addAttribute("sesion", sesion);
+        } else {
+            String sesion = "usuario";
+            modelo.addAttribute("sesion", sesion);
+        }
         return "usuario/productohome";
     }
 
     @PostMapping("carrito")
-    public String addCart(@RequestParam Integer id, @RequestParam Integer cantidad, Model modelo) {
+    public String addCart(@RequestParam Integer id, @RequestParam Integer cantidad, Model modelo, HttpSession session) {
         DetalleOrden detalleOrden = new DetalleOrden();
         double sumaTotal = 0;
-        
+
         var producto = productoService.buscar(id).get();
         log.info("Producto {}", producto);
         log.info("Cantidad {}", cantidad);
-        
+
         detalleOrden.setCantidad(cantidad);
         detalleOrden.setNombre(producto.getNombre());
         detalleOrden.setPrecio(producto.getPrecio());
-        detalleOrden.setTotal(producto.getPrecio()*cantidad);
+        detalleOrden.setTotal(producto.getPrecio() * cantidad);
         detalleOrden.setProducto(producto);
-        
-        
+
         //Validar que el producto no se añada 2 veces
         Integer idProducto = producto.getId();
         boolean ingresado = detalles.stream().anyMatch(p -> p.getProducto().getId() == idProducto);
         if (!ingresado) {
             detalles.add(detalleOrden);
         }
-        
-        
-        
-        sumaTotal = detalles.stream().mapToDouble(dt->dt.getTotal()).sum();
+
+        sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
         orden.setTotal(sumaTotal);
-        
+
         modelo.addAttribute("carrito", detalles);
         modelo.addAttribute("orden", orden);
+
+        if (session.getAttribute("idUsuario") == null) {
+            String sesion = null;
+            modelo.addAttribute("sesion", sesion);
+        } else {
+            String sesion = "usuario";
+            modelo.addAttribute("sesion", sesion);
+        }
         return "usuario/carrito";
     }
-    
+
     @GetMapping("delete/carrito/{id}")
-    public String eliminarProductoCarrito(@PathVariable Integer id, Model modelo) {
+    public String eliminarProductoCarrito(@PathVariable Integer id, Model modelo, HttpSession session) {
         //Nueva lista
-        List<DetalleOrden> ordenesNuevas = new ArrayList<DetalleOrden> ();
-        for(DetalleOrden detalleOrden : detalles){
-            if(detalleOrden.getProducto().getId() != id) {
+        List<DetalleOrden> ordenesNuevas = new ArrayList<DetalleOrden>();
+        for (DetalleOrden detalleOrden : detalles) {
+            if (detalleOrden.getProducto().getId() != id) {
                 ordenesNuevas.add(detalleOrden);
             }
         }
         //Poner la nueva lista con los productos restantes
         detalles = ordenesNuevas;
         double sumaTotal = 0;
-        sumaTotal = detalles.stream().mapToDouble(dt->dt.getTotal()).sum();
+        sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
         orden.setTotal(sumaTotal);
-        
+
         modelo.addAttribute("carrito", detalles);
         modelo.addAttribute("orden", orden);
-        
+
+        if (session.getAttribute("idUsuario") == null) {
+            String sesion = null;
+            modelo.addAttribute("sesion", sesion);
+        } else {
+            String sesion = "usuario";
+            modelo.addAttribute("sesion", sesion);
+        }
         return "usuario/carrito";
     }
-    
+
     @GetMapping("/getCart")
     public String getCart(Model modelo, HttpSession session) {
-        
+
         modelo.addAttribute("carrito", detalles);
         modelo.addAttribute("orden", orden);
         modelo.addAttribute("session", session.getAttribute("idUsuario"));
+
+        if (session.getAttribute("idUsuario") == null) {
+            String sesion = null;
+            modelo.addAttribute("sesion", sesion);
+        } else {
+            String sesion = "usuario";
+            modelo.addAttribute("sesion", sesion);
+        }
         return "/usuario/carrito";
     }
-    
+
     @GetMapping("/orden")
-    public String order(Model model, HttpSession session) {
+    public String order(Model modelo, HttpSession session) {
         //log.info("Usuario: {}", usuarioService.findById(Integer.parseInt(session.getAttribute("idUsuario").toString() )).get());
-        Usuario usuario = usuarioService.findById(Integer.parseInt(session.getAttribute("idUsuario").toString() )).get();
-        
-        model.addAttribute("carrito", detalles);
-        model.addAttribute("orden", orden);
-        
-        model.addAttribute("usuario", usuario);
+
+        if (session.getAttribute("idUsuario") == null) {
+            String sesion = null;
+            modelo.addAttribute("sesion", sesion);
+            return "redirect:/usuario/login";
+        } else {
+            Usuario usuario = usuarioService.findById(Integer.parseInt(session.getAttribute("idUsuario").toString())).get();
+
+            modelo.addAttribute("carrito", detalles);
+            modelo.addAttribute("orden", orden);
+
+            modelo.addAttribute("usuario", usuario);
+            String sesion = "usuario";
+            modelo.addAttribute("sesion", sesion);
+        }
         return "usuario/resumenorden";
     }
-    
+
     @GetMapping("/saveOrder")
     public String saveOrder(HttpSession session) {
         Date fechaCreacion = new Date();
         orden.setFechaCreacion(fechaCreacion);
         orden.setNumero(ordenService.generarNumeroOrden());
-        
+
         //Usuario
-        Usuario u = usuarioService.findById(Integer.parseInt(session.getAttribute("idUsuario").toString() )).get();
-        
+        Usuario u = usuarioService.findById(Integer.parseInt(session.getAttribute("idUsuario").toString())).get();
+
         orden.setUsuario(u);
         ordenService.save(orden);
-        
+
         //guardar detalles
         for (DetalleOrden dt : detalles) {
             dt.setOrden(orden);
             detalleOrdenService.save(dt);
         }
-        
+
         //limpiar lista y orden
         orden = new Orden();
         detalles.clear();
         return "redirect:/";
     }
-    
+
     @PostMapping("/buscar")      //@RequestParam es para recibir un dato de la vista
-    public String buscarProducto(@RequestParam String nombre, Model modelo) { 
+    public String buscarProducto(@RequestParam String nombre, Model modelo) {
         log.info("Nombre del producto: {}", nombre);
-        List<Producto> productos =  productoService.listar().stream().filter(p -> p.getNombre().contains(nombre)).collect(Collectors.toList());
+        List<Producto> productos = productoService.listar().stream().filter(p -> p.getNombre().contains(nombre)).collect(Collectors.toList());
         modelo.addAttribute("productos", productos);
         return "usuario/home";
     }

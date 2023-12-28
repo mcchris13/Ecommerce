@@ -51,6 +51,7 @@ public class UsuarioController {
     
     @GetMapping("/login")
     public String login() {
+        
         return "usuario/login";
     }
     
@@ -72,7 +73,7 @@ public class UsuarioController {
         }else {
             logger.info("Usuario no existe");
         }
-        return "redirect:/";
+        return "redirect:/usuario/login";
     }
     
     
@@ -84,6 +85,13 @@ public class UsuarioController {
         
         modelo.addAttribute("ordenes", ordenService.findByUsuario(u));
         
+        if (session.getAttribute("idUsuario") == null) {
+            String sesion = null;
+            modelo.addAttribute("sesion", sesion);
+        }else {
+            String sesion = "usuario";
+            modelo.addAttribute("sesion", sesion);
+        }
         return "usuario/compras";
     }
     
@@ -93,6 +101,20 @@ public class UsuarioController {
         modelo.addAttribute("session",session.getAttribute("idUsuario"));
         Optional<Orden> o = ordenService.buscar(id);
         modelo.addAttribute("detalles", o.get().getDetalle());
+        
+        if (session.getAttribute("idUsuario") == null) {
+            String sesion = null;
+            modelo.addAttribute("sesion", sesion);
+        }else {
+            String sesion = "usuario";
+            modelo.addAttribute("sesion", sesion);
+        }
         return "usuario/detallecompra";
+    }
+    
+    @GetMapping("/cerrar")
+    public String cerrarSesion(HttpSession session) {
+        session.removeAttribute("idUsuario");
+        return "redirect:/";
     }
 }
